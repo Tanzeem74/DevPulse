@@ -8,7 +8,7 @@ dotenv.config({
 const config = {
     connection_string: process.env.CONNECTIONSTRING as string,
     secret: process.env.JWT_SECRET,
-    refresh_secret: process.env.JWT_REFRESH_SECRET,
+    //refresh_secret: process.env.JWT_REFRESH_SECRET,
     PORT: process.env.PORT
 };
 

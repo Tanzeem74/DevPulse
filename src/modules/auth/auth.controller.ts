@@ -1,11 +1,12 @@
-import { createUser, findUserByEmail } from "./auth.service";
 import { hashPassword, comparePassword, generateToken } from "../../utils/auth.utils";
 import type { Request, Response } from "express";
+import { authService } from "./auth.service";
 
-export const signup = async (req: Request, res: Response) => {
+const signup = async (req: Request, res: Response) => {
     try {
         const { name, email, password, role } = req.body;
-        const exist = await findUserByEmail(email);
+        const roleValue = role ?? "contributor"; 
+        const exist = await authService.findUserByEmail(email);
         if (exist) {
             return res.status(409).json({
                 success: false,
@@ -13,7 +14,7 @@ export const signup = async (req: Request, res: Response) => {
             });
         }
         const hashedPassword = await hashPassword(password);
-        const user = await createUser(name, email, hashedPassword, role);
+        const user = await authService.createUser(name, email, hashedPassword, roleValue);
         res.status(201).json({
             success: true,
             message: "User registered successfully",
@@ -27,10 +28,10 @@ export const signup = async (req: Request, res: Response) => {
     }
 };
 
-export const login = async (req: Request, res: Response) => {
+const login = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
-        const user = await findUserByEmail(email);
+        const user = await authService.findUserByEmail(email);
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -72,3 +73,6 @@ export const login = async (req: Request, res: Response) => {
         });
     }
 };
+export const authController = {
+    signup, login
+}

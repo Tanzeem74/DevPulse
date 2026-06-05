@@ -4,6 +4,10 @@ A collaborative backend system for software teams to report bugs, suggest featur
 
 ---
 
+## 🌐 Live API URL
+
+https://your-project-name.onrender.com
+
 ## 🚀 Project Overview
 
 **DevPulse** is a RESTful API built using **Node.js, Express, TypeScript, and PostgreSQL**.  
@@ -86,9 +90,41 @@ It provides authentication, role-based access control, and full issue lifecycle 
 
 ## 🌐 API Endpoints
 
+### 🔐 Auth Routes
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /api/auth/signup | Register new user |
+| POST | /api/auth/login | Login user & get JWT token |
+
 ---
 
-## 🔐 Auth APIs
+### 🐞 Issue Routes
 
-### Register User
+| Method | Endpoint | Description | Access |
+|--------|----------|-------------|--------|
+| POST | /api/issues | Create new issue | Authenticated |
+| GET | /api/issues | Get all issues | Public |
+| GET | /api/issues/:id | Get single issue | Public |
+| PATCH | /api/issues/:id | Update issue | Role-based |
+| DELETE | /api/issues/:id | Delete issue | Maintainer only |
 
+## 📦 Installation & Setup Guide
+
+Follow these steps to run the project locally:
+
+---
+
+### 1️⃣ Clone the Repository
+
+```bash
+git clone https://github.com/your-username/devpulse.git](https://github.com/Tanzeem74/DevPulse.git
+cd devpulse
+```
+## 📦 Install Dependencies
+
+After cloning the project, install all required packages using npm:
+
+```bash
+npm install
+```

@@ -64,8 +64,49 @@ const getSingleIssue = async (req: Request, res: Response) => {
   }
 };
 
+const updateIssue = async (req: Request, res: Response) => {
+  try {
+    const issueId = Number(req.params.id);
+    const issue = await issueService.getIssueById(issueId);
+    if (!issue) {
+      return res.status(404).json({
+        success: false,
+        message: "Issue not found",
+      });
+    }
+    const user = req.user;
+    if (user.role !== "maintainer") {
+      if (issue.reporter_id !== user.id) {
+        return res.status(403).json({
+          success: false,
+          message: "Forbidden",
+        });
+      }
+      if (issue.status !== "open") {
+        return res.status(403).json({
+          success: false,
+          message: "Issue can no longer be updated",
+        });
+      }
+    }
+    const { title, description, type } = req.body;
+    const updatedIssue = await issueService.updateIssueInDB(issueId, title, description, type);
+    return res.status(200).json({
+      success: true,
+      message: "Issue updated successfully",
+      data: updatedIssue,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 export const issueController = {
   createIssue,
   getIssues,
-  getSingleIssue
+  getSingleIssue,
+  updateIssue
 }

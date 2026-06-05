@@ -6,7 +6,7 @@ A collaborative backend system for software teams to report bugs, suggest featur
 
 ## 🌐 Live API URL
 
-https://your-project-name.onrender.com
+https://dev-pulse-five-gold.vercel.app/
 
 ## 🚀 Project Overview
 

@@ -104,9 +104,39 @@ const updateIssue = async (req: Request, res: Response) => {
   }
 };
 
+const deleteIssue = async (req: Request, res: Response) => {
+  try {
+    const user = req.user;
+    if (user.role !== "maintainer") {
+      return res.status(403).json({
+        success: false,
+        message: "Only maintainer can delete issues",
+      });
+    }
+    const id = Number(req.params.id);
+    const deletedIssue = await issueService.deleteIssueFromDB(id);
+    if (!deletedIssue) {
+      return res.status(404).json({
+        success: false,
+        message: "Issue not found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Issue deleted successfully"
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 export const issueController = {
   createIssue,
   getIssues,
   getSingleIssue,
-  updateIssue
+  updateIssue,
+  deleteIssue
 }

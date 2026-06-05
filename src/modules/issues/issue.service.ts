@@ -32,12 +32,20 @@ const getIssuesFromDB = async (query: any) => {
     } else {
         baseQuery += ` ORDER BY created_at DESC`;
     }
-    
+
     const result = await pool.query(baseQuery, values);
     return result.rows;
 };
 
+const getSingleIssueFromDB = async (id: number) => {
+    const result = await pool.query(
+        "SELECT * FROM issues WHERE id = $1", [id]);
+
+    return result.rows[0];
+};
+
 export const issueService = {
     createIssueIntoDB,
-    getIssuesFromDB
+    getIssuesFromDB,
+    getSingleIssueFromDB
 }

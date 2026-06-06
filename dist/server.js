@@ -252,14 +252,49 @@ var getIssuesFromDB = async (query) => {
     baseQuery += ` ORDER BY created_at DESC`;
   }
   const result = await pool.query(baseQuery, values);
-  return result.rows;
+  const finalData = await Promise.all(
+    result.rows.map(async (issue) => {
+      const user = await pool.query(
+        "SELECT id, name, role FROM users WHERE id = $1",
+        [issue.reporter_id]
+      );
+      return {
+        id: issue.id,
+        title: issue.title,
+        description: issue.description,
+        type: issue.type,
+        status: issue.status,
+        reporter: user.rows[0],
+        created_at: issue.created_at,
+        updated_at: issue.updated_at
+      };
+    })
+  );
+  return finalData;
 };
 var getSingleIssueFromDB = async (id) => {
   const result = await pool.query(
     "SELECT * FROM issues WHERE id = $1",
     [id]
   );
-  return result.rows[0];
+  const issue = result.rows[0];
+  if (!issue) {
+    return null;
+  }
+  const user = await pool.query(
+    "SELECT id, name, role FROM users WHERE id = $1",
+    [issue.reporter_id]
+  );
+  return {
+    id: issue.id,
+    title: issue.title,
+    description: issue.description,
+    type: issue.type,
+    status: issue.status,
+    reporter: user.rows[0],
+    created_at: issue.created_at,
+    updated_at: issue.updated_at
+  };
 };
 var getIssueById = async (id) => {
   const result = await pool.query(
@@ -280,6 +315,17 @@ var updateIssueInDB = async (id, title, description, type) => {
     `, [title, description, type, id]);
   return result.rows[0];
 };
+var updateIssueStatusInDB = async (id, status) => {
+  const result = await pool.query(
+    `UPDATE issues
+         SET status = $1,
+         updated_at = NOW()
+         WHERE id = $2
+         RETURNING *`,
+    [status, id]
+  );
+  return result.rows[0];
+};
 var deleteIssueFromDB = async (id) => {
   const result = await pool.query(
     "DELETE FROM issues WHERE id = $1 RETURNING *",
@@ -293,7 +339,8 @@ var issueService = {
   getSingleIssueFromDB,
   getIssueById,
   updateIssueInDB,
-  deleteIssueFromDB
+  deleteIssueFromDB,
+  updateIssueStatusInDB
 };
 
 // src/modules/issues/issue.controller.ts
